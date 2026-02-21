@@ -9,6 +9,7 @@ const corsOptions = {
   origin: [
     'http://localhost:5173',
     'http://localhost:3000',
+    'https://hk-aplus-kue9.vercel.app',
     /\.vercel\.app$/,
     /\.onrender\.com$/
   ],
