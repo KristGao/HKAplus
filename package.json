@@ -1,0 +1,10 @@
+{
+  "name": "dashboard-project",
+  "version": "1.0.0",
+  "description": "房客源系统 - Vue + Node 前后端分离项目",
+  "scripts": {
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "install:all": "cd server && npm install && cd ../client && npm install"
+  }
+}

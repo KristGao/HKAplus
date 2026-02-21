@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房客源系统 - 多端使用数据仪表盘</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 引入图标库 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pc: '#3b82f6', // 蓝色代表PC
+                        mobile: '#10b981', // 绿色代表移动端
+                        bgLight: '#f3f4f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        .chart-container-sm { position: relative; height: 220px; width: 100%; }
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 (模拟) -->
+        <aside class="w-64 bg-slate-900 text-white flex-shrink-0 hidden md:flex flex-col">
+            <div class="h-16 flex items-center px-6 border-b border-slate-800 font-bold text-xl tracking-wider">
+                <i class="fas fa-building mr-3 text-blue-400"></i> 中介云ERP
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4">
+                <a href="#" class="flex items-center px-6 py-3 bg-blue-600/20 text-blue-400 border-r-4 border-blue-500">
+                    <i class="fas fa-chart-pie w-6"></i> 多端数据看板
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fas fa-users w-6"></i> 业务员分析
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fas fa-home w-6"></i> 房源漏斗
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i class="fas fa-mobile-alt w-6"></i> 移动端推广
+                </a>
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航 -->
+            <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6 flex-shrink-0 z-10">
+                <div class="flex items-center">
+                    <button class="md:hidden text-gray-500 hover:text-gray-700 mr-4">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-semibold text-gray-800">系统运营与多端使用洞察</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 数据更新于: 今天 14:30</span>
+                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                        A
+                    </div>
+                </div>
+            </header>
+
+            <!-- 数据展示区 -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                
+                <!-- KPI 指标卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- 卡片 1 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">今日活跃用户 (DAU)</p>
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2">1,284</h3>
+                            </div>
+                            <div class="p-3 bg-indigo-50 rounded-lg text-indigo-500">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-500 font-medium flex items-center"><i class="fas fa-arrow-up mr-1"></i> 5.2%</span>
+                            <span class="text-gray-400 ml-2">较昨日</span>
+                        </div>
+                    </div>
+
+                    <!-- 卡片 2 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">移动端日活 (APP)</p>
+                                <h3 class="text-3xl font-bold text-mobile mt-2">1,056</h3>
+                            </div>
+                            <div class="p-3 bg-green-50 rounded-lg text-mobile">
+                                <i class="fas fa-mobile-alt text-xl px-1"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-500 font-medium flex items-center"><i class="fas fa-arrow-up mr-1"></i> 12.4%</span>
+                            <span class="text-gray-400 ml-2">推广活动效果显著</span>
+                        </div>
+                    </div>
+
+                    <!-- 卡片 3 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">PC端日活 (网页端)</p>
+                                <h3 class="text-3xl font-bold text-pc mt-2">642</h3>
+                            </div>
+                            <div class="p-3 bg-blue-50 rounded-lg text-pc">
+                                <i class="fas fa-laptop text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-red-400 font-medium flex items-center"><i class="fas fa-arrow-down mr-1"></i> 3.1%</span>
+                            <span class="text-gray-400 ml-2">部分流量成功向APP转移</span>
+                        </div>
+                    </div>
+
+                    <!-- 卡片 4 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">今日新增放盘量</p>
+                                <h3 class="text-3xl font-bold text-gray-800 mt-2">315</h3>
+                            </div>
+                            <div class="p-3 bg-orange-50 rounded-lg text-orange-500">
+                                <i class="fas fa-key text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-gray-500 font-medium">PC端贡献: <span class="text-pc font-bold">88%</span></span>
+                            <i class="fas fa-check-circle text-green-500 ml-2" title="符合预期：核心操作保留在PC"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 核心图表行 1 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 趋势图：APP 与 PC 活跃度趋势 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">近7日活跃设备趋势</h2>
+                            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full">目标：提升移动端粘性</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 柱状图：核心功能的使用端分布 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">主要业务场景双端使用分布</h2>
+                            <button class="text-gray-400 hover:text-blue-500"><i class="fas fa-download"></i></button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="featureChart"></canvas>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2 text-center">洞察：带看与跟进高度依赖APP，而放盘与合同录入依然以PC为主。</p>
+                    </div>
+                </div>
+
+                <!-- 核心图表行 2：动态监控与实时追踪 -->
+                <div class="flex flex-col xl:flex-row gap-6">
+                    
+                    <!-- 左侧：动态监控区 -->
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">自定义监控面板 <span class="text-xs font-normal text-gray-400 ml-2">可自由添加多维数据卡片</span></h2>
+                            <button id="addMonitorBtn" class="bg-white border border-gray-200 text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-sm font-medium shadow-sm transition flex items-center">
+                                <i class="fas fa-plus mr-1"></i> 添加看板
+                            </button>
+                        </div>
+                        <!-- 卡片动态渲染容器 -->
+                        <div id="monitorContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- JS 将在这里动态插入卡片 -->
+                        </div>
+                    </div>
+
+                    <!-- 右侧：实时动态列表 (固定宽度) -->
+                    <div class="w-full xl:w-96 flex-shrink-0">
+                        <div class="bg-white rounded-xl shadow-sm p-0 border border-gray-100 flex flex-col h-full overflow-hidden">
+                            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                                <h2 class="text-md font-semibold text-gray-800">今日业务实时跟踪</h2>
+                                <span class="relative flex h-3 w-3">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                </span>
+                            </div>
+                            <div class="p-0 flex-1 overflow-y-auto max-h-[350px] xl:max-h-[500px]">
+                                <ul class="divide-y divide-gray-100">
+                                    <li class="p-4 hover:bg-gray-50 flex items-start space-x-3">
+                                        <div class="bg-blue-100 text-pc p-2 rounded-full mt-1"><i class="fas fa-desktop text-xs"></i></div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between"><span class="font-medium text-sm">王大锤 (南山二店)</span> <span class="text-xs text-gray-400">2分钟前</span></div>
+                                            <p class="text-xs text-gray-600 mt-1">在PC端完成了 <span class="font-semibold text-blue-600">新房源放盘</span> (阳光海滨花园3居室)</p>
+                                        </div>
+                                    </li>
+                                    <li class="p-4 hover:bg-gray-50 flex items-start space-x-3">
+                                        <div class="bg-green-100 text-mobile p-2 rounded-full mt-1"><i class="fas fa-mobile-alt text-xs px-1"></i></div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between"><span class="font-medium text-sm">李雪 (福田中心店)</span> <span class="text-xs text-gray-400">5分钟前</span></div>
+                                            <p class="text-xs text-gray-600 mt-1">通过APP添加了一条 <span class="font-semibold text-green-600">带看记录</span> (客户: 张先生)</p>
+                                        </div>
+                                    </li>
+                                    <li class="p-4 hover:bg-gray-50 flex items-start space-x-3">
+                                        <div class="bg-green-100 text-mobile p-2 rounded-full mt-1"><i class="fas fa-mobile-alt text-xs px-1"></i></div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between"><span class="font-medium text-sm">陈师傅 (罗湖老街店)</span> <span class="text-xs text-gray-400">12分钟前</span></div>
+                                            <p class="text-xs text-gray-600 mt-1">通过APP完成了 <span class="font-semibold text-green-600">房源一键分享</span> 到微信</p>
+                                        </div>
+                                    </li>
+                                    <li class="p-4 hover:bg-gray-50 flex items-start space-x-3">
+                                        <div class="bg-blue-100 text-pc p-2 rounded-full mt-1"><i class="fas fa-desktop text-xs"></i></div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between"><span class="font-medium text-sm">张店长 (宝安一店)</span> <span class="text-xs text-gray-400">28分钟前</span></div>
+                                            <p class="text-xs text-gray-600 mt-1">在PC端录入了 <span class="font-semibold text-purple-600">房屋买卖合同</span> (单号: HT20231024)</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 通用图表配置
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+        Chart.defaults.color = '#64748b';
+
+        // 1. 活跃度趋势图 (折线图)
+        const ctxTrend = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctxTrend, {
+            type: 'line',
+            data: {
+                labels: ['10-18', '10-19', '10-20', '10-21', '10-22', '10-23', '今日'],
+                datasets: [
+                    {
+                        label: '移动端 (APP/小程序)',
+                        data: [720, 780, 750, 890, 950, 1020, 1056],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'PC网页端',
+                        data: [680, 690, 650, 640, 660, 650, 642],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top', align: 'end' }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [2, 4], color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. 核心功能分布 (堆叠条形图)
+        const ctxFeature = document.getElementById('featureChart').getContext('2d');
+        new Chart(ctxFeature, {
+            type: 'bar',
+            data: {
+                labels: ['新房源录入(放盘)', '合同/业绩录入', '房源精确搜寻', '客户跟进录入', '带看记录签到', '房源朋友圈分享'],
+                datasets: [
+                    {
+                        label: 'PC端占比 %',
+                        data: [82, 95, 45, 15, 5, 2],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: { topLeft: 4, bottomLeft: 4 }
+                    },
+                    {
+                        label: '移动端占比 %',
+                        data: [18, 5, 55, 85, 95, 98],
+                        backgroundColor: '#10b981',
+                        borderRadius: { topRight: 4, bottomRight: 4 }
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y', // 横向柱状图更适合展示长文本标签
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, max: 100, ticks: { callback: function(value) { return value + "%" } } },
+                    y: { stacked: true, grid: { display: false } }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) { return context.dataset.label + ': ' + context.raw + '%'; }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. 动态配置及渲染监控图表逻辑
+        const monitorDataMap = {
+            'listing': {
+                labels: ['PC端放盘', 'APP极速放盘'],
+                data: [82, 18],
+                colors: ['#3b82f6', '#10b981'], // 蓝, 绿
+                adviceHtml: '<div class="bg-blue-50 p-3 rounded-lg text-sm text-blue-800 animate-fade-in"><i class="fas fa-lightbulb mr-1"></i> <strong>运营建议：</strong> 目前82%的放盘在PC端完成，符合“复杂操作留给PC”的定位。移动端18%主要为现场极速录入。</div>'
+            },
+            'followup': {
+                labels: ['PC端跟进', 'APP端跟进'],
+                data: [12, 88],
+                colors: ['#93c5fd', '#34d399'], // 浅蓝, 浅绿
+                adviceHtml: '<div class="bg-green-50 p-3 rounded-lg text-sm text-green-800 animate-fade-in"><i class="fas fa-bullseye mr-1"></i> <strong>达成情况：</strong> 超过88%的跟进动作已转移至移动端，外勤效率大幅提升。</div>'
+            },
+            'contract': {
+                labels: ['PC端合同录入', 'APP端合同审批'],
+                data: [95, 5],
+                colors: ['#8b5cf6', '#fcd34d'], // 紫色, 黄色
+                adviceHtml: '<div class="bg-purple-50 p-3 rounded-lg text-sm text-purple-800 animate-fade-in"><i class="fas fa-shield-alt mr-1"></i> <strong>风控提示：</strong> 核心合同业务95%在PC端进行，有效确保了流程合规和条款核对的严谨性。</div>'
+            },
+            'share': {
+                labels: ['PC端转发', 'APP端海报分享'],
+                data: [2, 98],
+                colors: ['#cbd5e1', '#f43f5e'], // 灰色, 玫瑰红
+                adviceHtml: '<div class="bg-rose-50 p-3 rounded-lg text-sm text-rose-800 animate-fade-in"><i class="fas fa-share-nodes mr-1"></i> <strong>营销分析：</strong> 几乎全量(98%)的社交裂变动作发生在APP端，建议技术部持续优化海报生成加载速度。</div>'
+            }
+        };
+
+        // 用于管理动态生成的图表实例和计数
+        let monitorCounter = 0;
+        const chartInstances = {};
+
+        // 初始化图表实例的通用函数
+        function initMonitorChart(canvasId, initialKey) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const dataConfig = monitorDataMap[initialKey];
+            
+            return new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: dataConfig.labels,
+                    datasets: [{
+                        data: dataConfig.data,
+                        backgroundColor: dataConfig.colors,
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        // 动态创建看板 HTML 的函数
+        function createMonitorCard(initialKey = 'listing') {
+            monitorCounter++;
+            const cardId = `monitor-card-${monitorCounter}`;
+            const canvasId = `monitor-canvas-${monitorCounter}`;
+            const selectId = `monitor-select-${monitorCounter}`;
+            const timeSelectId = `monitor-time-${monitorCounter}`;
+            const adviceId = `monitor-advice-${monitorCounter}`;
+
+            const cardHTML = `
+                <div id="${cardId}" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex flex-col relative group hover:shadow-md transition">
+                    <!-- 删除按钮 -->
+                    <button onclick="removeMonitorCard('${cardId}', '${canvasId}')" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity bg-white rounded-full p-1" title="移除该监控">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <div class="flex justify-between items-center mb-4 pr-6">
+                        <h2 class="text-md font-semibold text-gray-800">自定义大盘监控</h2>
+                        <div class="flex space-x-2">
+                            <select id="${timeSelectId}" class="text-xs border-gray-300 rounded-md text-gray-500 focus:ring-blue-500 focus:border-blue-500 p-1 bg-gray-50 cursor-pointer outline-none hover:bg-gray-100 transition">
+                                <option value="1">昨日</option>
+                                <option value="7" selected>近7天</option>
+                                <option value="14">近14天</option>
+                                <option value="30">近30天</option>
+                            </select>
+                            <select id="${selectId}" class="text-sm border-gray-300 rounded-md text-gray-600 focus:ring-blue-500 focus:border-blue-500 p-1 bg-gray-50 cursor-pointer outline-none hover:bg-gray-100 transition">
+                                <option value="listing" ${initialKey === 'listing' ? 'selected' : ''}>房源录入(放盘)</option>
+                                <option value="followup" ${initialKey === 'followup' ? 'selected' : ''}>客户跟进/带看</option>
+                                <option value="contract" ${initialKey === 'contract' ? 'selected' : ''}>电子合同签署</option>
+                                <option value="share" ${initialKey === 'share' ? 'selected' : ''}>房源营销分享</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container-sm">
+                        <canvas id="${canvasId}"></canvas>
+                    </div>
+                    <div id="${adviceId}" class="mt-auto pt-4">
+                        ${monitorDataMap[initialKey].adviceHtml.replace('目前', '<strong>[近7天]</strong> ')}
+                    </div>
+                </div>
+            `;
+
+            // 将生成的 HTML 插入到容器末尾
+            document.getElementById('monitorContainer').insertAdjacentHTML('beforeend', cardHTML);
+
+            // 初始化 Chart.js
+            chartInstances[canvasId] = initMonitorChart(canvasId, initialKey);
+
+            // 绑定下拉菜单切换事件
+            const typeSelect = document.getElementById(selectId);
+            const timeSelect = document.getElementById(timeSelectId);
+
+            typeSelect.addEventListener('change', () => {
+                updateChart(chartInstances[canvasId], adviceId, typeSelect.value, timeSelect.value);
+            });
+
+            timeSelect.addEventListener('change', () => {
+                updateChart(chartInstances[canvasId], adviceId, typeSelect.value, timeSelect.value);
+            });
+        }
+
+        // 删除看板的函数
+        window.removeMonitorCard = function(cardId, canvasId) {
+            // 销毁 Chart 实例避免内存泄漏
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+                delete chartInstances[canvasId];
+            }
+            // 移除 DOM 元素
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.remove();
+            }
+        };
+
+        // 更新图表及提示文案的核心函数
+        function updateChart(chartInstance, adviceBoxId, selectedKey, timeRange = '7') {
+            const config = monitorDataMap[selectedKey];
+            
+            // 为了模拟真实的不同时间段数据变化，基于基础配置加入合理的波动
+            let baseData = [...config.data];
+            let variance = 0;
+            
+            if (timeRange === '1') {
+                variance = Math.floor(Math.random() * 8) - 4; // 昨日数据波动较大
+            } else if (timeRange === '14') {
+                variance = Math.floor(Math.random() * 4) - 2; // 14天波动平缓
+            } else if (timeRange === '30') {
+                variance = Math.floor(Math.random() * 10) - 5; // 30天有一定趋势变化
+            }
+            
+            // 确保比例在 0-100 之间并保证总和为 100
+            let newData0 = Math.max(0, Math.min(100, baseData[0] + variance));
+            let newData1 = 100 - newData0;
+
+            chartInstance.data.labels = config.labels;
+            chartInstance.data.datasets[0].data = [newData0, newData1];
+            chartInstance.data.datasets[0].backgroundColor = config.colors;
+            chartInstance.update(); // 执行动画更新
+            
+            // 更新文案中的时间标识
+            const timeLabels = { '1': '昨日', '7': '近7天', '14': '近14天', '30': '近30天' };
+            const timeText = timeLabels[timeRange];
+            
+            // 替换原始文案中的“目前”以展示当前选择的时间段
+            document.getElementById(adviceBoxId).innerHTML = config.adviceHtml.replace('目前', `<strong>[${timeText}]</strong> `);
+        }
+
+        // 绑定"添加看板"按钮点击事件
+        document.getElementById('addMonitorBtn').addEventListener('click', () => {
+            // 每次点击随机初始化一个主题，体验更好
+            const keys = Object.keys(monitorDataMap);
+            const randomKey = keys[Math.floor(Math.random() * keys.length)];
+            createMonitorCard(randomKey);
+        });
+
+        // 页面初始化时默认加载两张图表
+        document.addEventListener('DOMContentLoaded', () => {
+            createMonitorCard('listing');
+            createMonitorCard('followup');
+        });
+    </script>
+</body>
+</html>
